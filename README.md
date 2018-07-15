@@ -18,4 +18,5 @@ actions were not subverted.
 ## Where to Start:
 
 * [General Architecture](documentation/Architecture.md) - A top level overview of TrenchBoot
+* [Use Case Definition](documentation/UseCases.md) - A collection of example use cases
 
