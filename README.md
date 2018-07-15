@@ -19,4 +19,5 @@ actions were not subverted.
 
 * [General Architecture](documentation/Architecture.md) - A top level overview of TrenchBoot
 * [Use Case Definition](documentation/UseCases.md) - A collection of example use cases
+* [Developers Guide](documentation/DevelopersGuide.md) - A developers guide that explains the internals of TrenchBoot
 
