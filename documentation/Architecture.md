@@ -17,7 +17,7 @@ given control over the system.
 
 # TrenchBoot Security Engine
 
-At the heart of the TrencBoot Loader is the TrenchBoot Security Engine.  The
+At the heart of the TrenchBoot Loader is the TrenchBoot Security Engine.  The
 Security Engine is responsible for processing any evidence collected by the
 BITs, collect new evidence as needed, evaluate all evidence according to
 security policy, and execute appropriate enforcement actions. The components
@@ -31,7 +31,7 @@ below.
 A core concept in TrenchBoot is that of evidence. For TrenchBoot, evidence is a
 record of an event that occurred within the system. The typical form for these
 records is a cryptographic hash of system state that was the result of this
-event. This cryptographic hash is often referred to as a measurement. 
+event. This cryptographic hash is often referred to as a measurement.
 
 ## Boot Integrity Technology
 

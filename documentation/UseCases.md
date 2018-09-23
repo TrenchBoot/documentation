@@ -5,7 +5,7 @@ TrenchBoot is meant to be a universal framework to enable building integrity in
 the launch process of systems. To relate to real world usage, it is good to
 have a set of use cases that explain a subset of situations where TrenchBoot is
 applicable and how it would work in those situations. Below are a series of use
-cases that are actively being investigated and/or worked on. 
+cases that are actively being investigated and/or worked on.
 
 
 ## Crowd Sourcing Integrity
@@ -24,7 +24,7 @@ Authority (ACA).
 
 An individual or enterprise may not want to allow a system to boot on to their
 network unless it is running a known configuration. When TrenchBoot is
-installed onto a system it will work in conjunction with a Trenchboot ACA
+installed onto a system it will work in conjunction with a TrenchBoot ACA
 (public or private instance) that provides a key management service. TrenchBoot
 will hold a potion of a Shamir Secret Sharing key with another portion held by
 the key management service. For the system to boot it will attest to key
@@ -35,11 +35,10 @@ disk.
 
 Will traveling there are times when an individual looses positive control of
 their device. During these times attackers can launch physical access attacks.
-For this configuration TrenchBoot will "double chain wrap" the encryption key for
-decrypting the system where each chain wrap correlates to an authentication
-factor. Working internal to external, the system drive key is encrypted with the
-first wrap
-key that is in turned encrypted with the second wrap key. The first wrap key is
-stored on a removable token device, e.g. YubiKey, and the second wrap key is
-sealed in a TPM NVRAM slot. For a system to boot it must have launched with the
-correct firmware and the token must be present.
+For this configuration TrenchBoot will "double chain wrap" the encryption key
+for decrypting the system where each chain wrap correlates to an authentication
+factor. Working internal to external, the system drive key is encrypted with
+the first wrap key that is in turned encrypted with the second wrap key. The
+first wrap key is stored on a removable token device, e.g. YubiKey, and the
+second wrap key is sealed in a TPM NVRAM slot. For a system to boot it must
+have launched with the correct firmware and the token must be present.
