@@ -9,7 +9,7 @@ build system used to compose TrenchBoot launchable images.
 ## TrenchBoot Linux/uroot Configuration
 
 A TrenchBoot launchable image consists of a TrenchBoot Linux kernel with a
-TrenchBoot uroot initramfs embedded within the image. When building for a target,
+TrenchBoot u-root initramfs embedded within the image. When building for a target,
 the boot capabilities and BITs that will be supported will result in different
 launchable images. The diagram below provides a simple visual depiction of this
 setup.
