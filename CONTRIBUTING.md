@@ -9,6 +9,45 @@ transparent as possible, whether it's:
 - Proposing new features
 - Becoming a maintainer
 
+## Project Structure
+
+The functionality being developed under TrenchBoot are cross-cutting
+capabilities that span multiple open source projects.  The role of TrenchBoot
+is to function as both a development as well as a cross-project integration
+project. As such it maintains a set of repository clones of upstream
+project(s) that TrenchBoot conducts development within. 
+
+### Upstream Repository
+
+For each upstream repoository within TrenchBoot will have at least one maintainer.
+The maintainer(s) will have merge permissions and responsible for maintaining
+adherence to upstream practices. When necessary, they are responsible for
+maintaining out-of-tree capabilities developed by TrenchBoot.
+
+#### Upstream Focus
+
+One of the primary objectives for TrenchBoot is to deliver interoperable launch
+integrity capabilities to existing open source projects involved with the
+system boot cycle. Under this objective, all development against an upstream
+project must comply with upstream coding style and strive to minimize
+disruption/breakage of upstream capabilities.
+
+#### Out of Tree Maintenance
+
+There may be a case that a TrenchBoot capability may encounter a slow adoption
+by an upstream project which results in multiple upstream releases without the
+capability merged. As such the capability in question must be kept in sync with
+upstream changes. While this situation is not desired, it is likely to occur
+and will be the responsibility of the respective TrenchBoot maintainer(s).
+
+### TrenchBoot Original Repositories
+
+While the focus is on delivering capabilities into upstream projects, it is
+possible that a new or derivative code base may result to fulfill a role in a
+cross-cutting capability. The maintainer(s) for these code bases will be
+responsible for establishing coding styles and licensing that ensure compliance
+with all other TrenchBoot relevant projects.
+
 ## Development
 
 We use github to host the project, to include tracking issues and feature
