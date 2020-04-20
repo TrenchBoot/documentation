@@ -26,11 +26,11 @@ reside at different locations in memory. This is sometimes referred to as a
 "Late Launch".
 
 #### Explicit Trust:
-When a trustor has explicitly established a degree of trust with a trustee
+When a trustor has explicitly established a degree of trust with a trustee.
 
 #### Implicit Trust:
 When a trustor has relied upon a trustee to establish a degree of trust with
-another trustee
+another trustee.
 
 #### Root of Trust:
 An idempotent mechanism whereby the result is used to assert a fact about the
@@ -38,7 +38,7 @@ entity it acted upon.
 
 #### Static Launch:
 A system launch that is a one time execution with the execution code at a fixed
-location in memory
+location in memory.
 
 #### Transitive Trust:
 An operation conducted by a trustor that consists of one or more mechanisms
@@ -50,16 +50,16 @@ act as a trustor.
 Assured reliance on the properties, ability, strength, or truth of an entity.
 
 #### Trust Anchor:
-The result of a RoT mechanism that is fact being relied upon to assert
-correctness, e.g. trustworthiness
+The result of a Root of Trust mechanism that is a fact being relied upon to assert
+correctness, e.g. trustworthiness.
 
 #### Trust Boundary:
 A demarcation that identifies a subset of entities as those that a trustor has
-explicitly or implicitly established as trustworthy
+explicitly or implicitly established as trustworthy.
 
 #### Trustee:
-An entity that is trusted by another entity
+An entity that is trusted by another entity.
 
 #### Trustor:
-An entity that establishes a degree of trust of another entity
+An entity that establishes a degree of trust of another entity.
 

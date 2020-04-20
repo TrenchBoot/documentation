@@ -22,18 +22,18 @@ Authority (ACA).
 
 ## Network Attestation Launch
 
-An individual or enterprise may not want to allow a system to boot on to their
+An individual or enterprise may not want to allow a system to boot on their
 network unless it is running a known configuration. When TrenchBoot is
 installed onto a system it will work in conjunction with a TrenchBoot ACA
 (public or private instance) that provides a key management service. TrenchBoot
-will hold a potion of a Shamir Secret Sharing key with another portion held by
-the key management service. For the system to boot it will attest to key
-management service to obtain key fragment that will allow it to unlock system
+will hold a portion of a Shamir Secret Sharing key with another portion held by
+the key management service. For the system to boot it will attest to the key
+management service to obtain a key fragment that will allow it to unlock the system
 disk.
 
 ## Travel Laptop 2FA Launch
 
-Will traveling there are times when an individual looses positive control of
+When travelling there are times when an individual loses positive control of
 their device. During these times attackers can launch physical access attacks.
 For this configuration TrenchBoot will "double chain wrap" the encryption key
 for decrypting the system where each chain wrap correlates to an authentication

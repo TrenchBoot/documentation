@@ -6,7 +6,7 @@ kernel and security engine components appropriate for their target environment.
 This developers guide focuses on the software components of TrenchBoot and the
 build system used to compose TrenchBoot launchable images.
 
-## TrenchBoot Linux/uroot Configuration
+## TrenchBoot Linux/u-root Configuration
 
 A TrenchBoot launchable image consists of a TrenchBoot Linux kernel with a
 TrenchBoot u-root initramfs embedded within the image. When building for a target,
