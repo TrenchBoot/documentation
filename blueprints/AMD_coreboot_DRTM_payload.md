@@ -16,19 +16,43 @@ PC Engines apu2 platform is used in this PoC. Software stack consists of:
 ### coreboot
 
 - Build system now includes SKL
+  - Added under `payloads` directory, perhaps this is not a proper place for it
+  - Enabled through `Chipset/Launch DRTM payload before the real one` in config,
+    available only for enabled platforms (depends on `CPU_AMD_PI`)
 - Enabled SMMSTORE
+  - 256KB of append only storage for UEFI authenticated variables
 - IOMMU is always enabled if DRTM payload is used
+  - Enforced on mainboard level due to specific implementation of runtime
+    configuration options
 - Loading and creating boot information tags for SKL
+  - Code is built only for `CPU_AMD_PI` - CPU family 16h
+  - Probably could be make to work on other AMD platforms with minimal changes
 
 ### SKL
 
-- Support for simple payload - just base, size, entry point and argument
+- Support for simple payload - just base, size, entry point and argument:
+
+```c
+struct skl_tag_boot_simple_payload {
+    struct skl_tag_hdr hdr;
+    u32 base;
+    u32 size;
+    u32 entry;
+    u32 arg;
+} __packed;
+```
 
 ### Tianocore
 
 - SKINIT driver - discover if SKINIT was used, set GIF in that case
-- IOMMU driver (WIP) - enable DMA access for devices that require and request it
-(USB, AHCI)
+  - Performed early in DXE because other drivers (including SMMSTORE
+    initialization) require enabled interrupts
+- IOMMU driver - enable DMA access for devices that require and request it
+  - Heavily used by drivers to access storage (USB, AHCI)
+  - Uses `EDKII_IOMMU_PROTOCOL`
+  - Many simplifications done, e.g. no differentiation between read and write
+    permissions, no proper unmapping of device page tables, every invalidation
+    uses `INVALIDATE_IOMMU_ALL` when smaller, targeted flushing would suffice
 
 ## TODOs
 
@@ -36,9 +60,8 @@ PC Engines apu2 platform is used in this PoC. Software stack consists of:
 - (coreboot) SKL hash(es) aren't passed to SKL
 - (SKL?) SMM is not measured
 - (UEFI) APs are not started securely (i.e. without INIT) yet
-- (UEFI) IOMMU driver is not finished, as a result neither booting from media
-nor UEFI Shell are able to boot
 - (UEFI) Tables exposed by coreboot (ACPI, SMBIOS) are not measured
+- (UEFI) Polishing of IOMMU driver
 
 ## Building
 
@@ -64,6 +87,10 @@ $ make
 
 This should produce `build/coreboot.rom` that is to be flashed into apu2. Make
 sure you have a way of recovering through external flashing.
+
+Note that first boot takes few seconds to initialize SMMSTORE area, for release
+builds this results in pause after `skl_main() is about to exit`, before any
+output from UEFI appears. Do not be alarmed by this.
 
 ## Issues
 
