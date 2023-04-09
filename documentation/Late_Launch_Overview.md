@@ -118,15 +118,17 @@ in the EAX register. The CPU will then execute the following sequence,
     * EAX: start address of SL
     * EDX: CPU model, family, and stepping
 4. Secures registers,
-    * Most MSRs retain their values (except those which might compromise SVM protections)
+    * Most Machine Specific Registers (MSRs) retain their values (except those
+      which might compromise SVM protections)
     * EFER MSR is cleared
     * setting DPD, R_INIT and DIS_A20M flags in the VM_CR register unconditionally to 1
 4. Page align EAX and use as the start address for 64KBytes of DEV protection
-5. Securely initializes AP(s)
+5. Securely initializes Application Processors (APs)
     * clears Global Interrupt Flag (GIF)
     * setting DPD, R_INIT and DIS_A20M flags in the VM_CR register
 6. Transmit SL image to TPM for hash, any failure will trigger SKINIT failure
-7. Clear the GIF on the BSP which disables all interrupts, including NMI, SMI, and INIT
+7. Clear the GIF on the BootStrap Processor (BSP) which disables all interrupts,
+   including NMI, SMI, and INIT
 8. Update ESP to point at SL stack (SLB base + 65536)
 9. Add SL entry offset to SL base and jump to that address
 
