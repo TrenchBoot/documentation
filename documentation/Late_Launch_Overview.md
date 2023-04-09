@@ -27,7 +27,7 @@ result each will be addressed separately.
 
 ## Intel Trusted eXecution Technology (TXT)
  
-For TXT, Intel set about a holistic approach<sup>i\[[1](#1)\]</sup> that
+For TXT, Intel set about a holistic approach<sup>\[[1](#1)\]</sup> that
 introduced the Safer Mode Extensions (SMX) instruction set. As a result TXT
 provides for advanced security capabilities such as measuring System Management
 Mode (SMM) when an SMI Transfer Monitor (STM) is in place. The TXT process is
