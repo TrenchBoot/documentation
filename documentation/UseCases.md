@@ -38,7 +38,7 @@ their device. During these times attackers can launch physical access attacks.
 For this configuration TrenchBoot will "double chain wrap" the encryption key
 for decrypting the system where each chain wrap correlates to an authentication
 factor. Working internal to external, the system drive key is encrypted with
-the first wrap key that is in turned encrypted with the second wrap key. The
+the first wrap key that is in turn encrypted with the second wrap key. The
 first wrap key is stored on a removable token device, e.g. YubiKey, and the
 second wrap key is sealed in a TPM NVRAM slot. For a system to boot it must
 have launched with the correct firmware and the token must be present.
