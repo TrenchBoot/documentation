@@ -51,17 +51,17 @@ CRTM used for the DRTM. Below is an outline of the internal steps that the CPU
 takes when the SENTER instruction is initial invoked,
 
 1. Inhibit processor response to external events: INIT, A20M, NMI, and SMI.
-2. Establish and check the location and size of the authenticated code module to be executed by the ILP.
+2. Establish and check the location and size of the ACM to be executed by the ILP.
 3. Check for the existence of an Intel® TXT-capable chipset.
 4. Verify the current power management configuration is acceptable.
 5. Broadcast a message to enable protection of memory and I/O from the activities of other processor agents.
-6. Load the designated AC module into the authenticated code execution area.
+6. Load the designated ACM into the authenticated code execution area.
 7. Isolate the content of the authenticated code execution area from further state modification by external agents.
-8. Authenticate the AC module.
-9. Updated the Trusted Platform Module (TPM) with the authenticated code module's hash.
-10. Initialize processor state based on the authenticated code module header information.
+8. Authenticate the ACM.
+9. Updated the TPM with the ACM's hash.
+10. Initialize processor state based on the ACM header information.
 11. Unlock the Intel® TXT-capable chipset private configuration register space and TPM locality 3 space.
-12. Begin execution in the authenticated code module at the defined entry point.
+12. Begin execution in the ACM at the defined entry point.
 
 ### TXT ACM 
 
