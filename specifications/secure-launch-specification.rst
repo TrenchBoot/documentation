@@ -530,6 +530,7 @@ across to the post-launch environment.
 
     struct slr_entry_intel_info {
         struct slr_entry_hdr hdr;
+        struct slr_cpu_info cpu_info;
         u64 saved_misc_enable_msr;
         struct txt_mtrr_state saved_bsp_mtrrs;
     };
@@ -575,6 +576,7 @@ A placeholder for info specific to AMD SKINIT.
 
     struct slr_entry_amd_info {
         struct slr_entry_hdr hdr;
+        struct slr_cpu_info cpu_info;
     };
 
 ARM DRTM Environments
@@ -590,6 +592,27 @@ A placeholder for info specific to ARM D-RTM environments.
 
     struct slr_entry_arm_info {
         struct slr_entry_hdr hdr;
+        struct slr_cpu_info cpu_info;
+    };
+
+CPU Platform Information
+"""""""""""""""""""
+
+Each of the platform specific structures above contains CPU specific
+information structures. Currently the structure contians the location
+and size of the memory block used to wake up and halt CPUs after a
+secure launch. This is where the SMP bringup code for a given platform
+will find and wake all the secondary CPUs.
+
+:cpu_wait_block: Physical address of the allocated memory block for CPUs post secure launch
+:cpu_wait_block_size: Size of the memory block
+
+.. code-block:: c
+    :linenos: 1
+
+    struct slr_cpu_info {
+        u64 cpu_wait_block;
+        u32 cpu_wait_block_size;
     };
 
 UEFI Environments
