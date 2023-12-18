@@ -7,7 +7,7 @@ Secure Launch Specification
 
 .. class:: center
 
-**Version:** 0.5.0
+**Version:** 0.6.0-draft
 
 .. class:: center
 
@@ -138,7 +138,7 @@ Sequence
         +---------------------------------->|              |             |
         |                                   |              |             |
         |                                   |              |             |
-        |                  Initalize Table                 |             |
+        |                  Initialize Table                |             |
         +------------------------------------------------->|             |
         |                                                  |             |
         |    Invoke       |                 |              |             |
@@ -173,7 +173,7 @@ Secure Launch Interfaces
 ========================
 
 There are two interfaces to be defined here, the DLE Handler Specifications and
-the SLRT Specification. 
+the SLRT Specification.
 
 DLE Handler Specification
 -------------------------
@@ -185,7 +185,7 @@ Platform Requirements
 
 | **1** - x86 Platforms
 | **1.1** - The DLE Handler **MAY** be invoked with the CPU in either 32bit
-|       protected mode or 64bit long mode 
+|       protected mode or 64bit long mode
 | **1.2** - The SLRT **SHALL** be passed to the DLE Handler in the EDI/RDI CPU
 |       register
 | **1.3** - All other registers besides EDI/RDI are not guarenteed
@@ -217,7 +217,7 @@ Platform Requirements
 | **1** - General Requirements
 | **1.1** - The SLRT **MUST** begin with the magic value `0x4452544d`.
 | **1.2** - A properly formatted SLRT **SHALL** consist of a table header,
-|	zero or more table entries, and an end entry.
+|       zero or more table entries, and an end entry.
 | **1.3** - The SLRT **SHOULD** be in contiguous physical memory.
 | **1.3.1** - A preallocated, fixed size table is **OPTIONAL** through the use
 |       of the `max_size` field.
@@ -333,16 +333,16 @@ The list of valid entry tags.
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_ENTRY_INVALID	        0x0000
-    #define SLR_ENTRY_DL_INFO	        0x0001
-    #define SLR_ENTRY_LOG_INFO	        0x0002
-    #define SLR_ENTRY_DRTM_POLICY	0x0003
-    #define SLR_ENTRY_INTEL_INFO	0x0004
-    #define SLR_ENTRY_AMD_INFO	        0x0005
-    #define SLR_ENTRY_ARM_INFO	        0x0006
-    #define SLR_ENTRY_UEFI_INFO	        0x0007
-    #define SLR_ENTRY_UEFI_CONFIG	0x0008
-    #define SLR_ENTRY_END		0xffff
+    #define SLR_ENTRY_INVALID           0x0000
+    #define SLR_ENTRY_DL_INFO           0x0001
+    #define SLR_ENTRY_LOG_INFO          0x0002
+    #define SLR_ENTRY_DRTM_POLICY       0x0003
+    #define SLR_ENTRY_INTEL_INFO        0x0004
+    #define SLR_ENTRY_AMD_INFO          0x0005
+    #define SLR_ENTRY_ARM_INFO          0x0006
+    #define SLR_ENTRY_UEFI_INFO         0x0007
+    #define SLR_ENTRY_UEFI_CONFIG       0x0008
+    #define SLR_ENTRY_END               0xffff
 
 Dynamic Launch Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -430,7 +430,7 @@ D-RTM Measurement Policy
 
 The measurement policy is for conveying to the SL Entry on what it should
 measure, where that entity is located, which PCR the measurement should be
-stored, and how the event should be identified in the TPM event log. 
+stored, and how the event should be identified in the TPM event log.
 
 .. warning::
    The SL Entry **SHALL** fail if it determines an invalid policy is present.
@@ -448,7 +448,7 @@ stored, and how the event should be identified in the TPM event log.
         u16 nr_entries;
         /* policy_entries[] */
     };
-  
+
 
 DRTM Policy Entry
 """""""""""""""""
@@ -504,8 +504,8 @@ The list of valid flags for D-RTM Policy entries.
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_POLICY_FLAG_MEASURED	0x1
-    #define SLR_POLICY_IMPLICIT_SIZE	0x2
+    #define SLR_POLICY_FLAG_MEASURED    0x1
+    #define SLR_POLICY_IMPLICIT_SIZE    0x2
 
 Intel TXT Platforms
 ~~~~~~~~~~~~~~~~~~~
@@ -633,7 +633,7 @@ measured.
         u16 nr_entries;
         /* slr_uefi_cfg_entries[] */
     };
-  
+
 UEFI Config Entry
 """"""""""""""""
 
