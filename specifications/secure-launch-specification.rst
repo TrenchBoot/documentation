@@ -437,7 +437,7 @@ stored, and how the event should be identified in the TPM event log.
 
 :tag: SLR_ENTRY_ENTRY_POLICY
 :revision: A revision field to identify the version of policy being used.
-:nr_entries: The total number of policy entries available.
+:nr_entries: The total number of policy entries in the array.
 
 .. code-block:: c
     :linenos: 1
@@ -506,6 +506,10 @@ The list of valid flags for D-RTM Policy entries.
 
     #define SLR_POLICY_FLAG_MEASURED    0x1
     #define SLR_POLICY_IMPLICIT_SIZE    0x2
+
+Only some of the entry types can have `SLR_POLICY_IMPLICIT_SIZE` flag set. Such
+entries have their `size` specified as zero, and they **SHALL** be measured as
+described in Appendix A.
 
 Intel TXT Platforms
 ~~~~~~~~~~~~~~~~~~~
@@ -686,7 +690,7 @@ H(), the extend operation, is defined as:
 |        }
 
 Measuring the Policy
----------------------
+--------------------
 
 Measuring the policy is not as simple as hashing the block of memory containing
 the policy. This will not work as the policy may contain memory addresses that
@@ -712,6 +716,74 @@ Using this logic, the resulting operation to measure the policy would be as:
 
 The result, `M_policy`, will be a hash of the policy that can then be extended
 into one, or more if using as a cap value, PCR(s).
+
+Note that current SLRT specification version doesn't require measuring the
+policy, neither does it have appropriate policy entry type for that measurement.
+
+Measuring the SLRT
+------------------
+
+In revision one of the SLRT, the only table that needs to be measured is the
+vendor info table, i.e. one of `SLR_ENTRY_INTEL_INFO`, `SLR_ENTRY_AMD_INFO` or
+`SLR_ENTRY_ARM_INFO`. Everything else is meta-data, addresses and sizes. Note
+the size of what to measure is not set. The flag `SLR_POLICY_IMPLICIT_SIZE`
+leaves it to the measuring code to choose and use proper structure's size.
+The structure is measured as a whole, together with its header.
+
+Measuring the Linux setup_data
+------------------------------
+
+Single linked list of `struct setup_data` is a way to pass extensible boot
+parameters and other data from bootloader to Linux kernel.
+
+:next: Pointer to next `setup_data` structure, or NULL if this is the last one
+:type: Type of entry
+:len: Length of following data
+:data: Parameters passed from bootloader
+
+.. code-block:: c
+    :linenos: 1
+
+    struct setup_data {
+        u64 next;
+        u32 type;
+        u32 len;
+        u8  data[0];
+    };
+
+The above structure is limited by maximum size that can be specified, as well as
+by the fact that data must be immediately following the header. To handle these
+situations, a `setup_indirect` structure was added in later Linux boot protocol:
+
+:type: Type of entry, logically ORed with `SETUP_INDIRECT`
+:len: Length of data
+:addr: Pointer to data
+
+.. code-block:: c
+    :linenos: 1
+
+    struct setup_indirect {
+        u32 type;
+        u32 reserved;  /* Reserved, must be set to zero. */
+        u64 len;
+        u64 addr;
+    };
+
+If indirect entries are used, the `setup_indirect` is put as `setup_data->data`,
+and `setup_data->type` is set to `SETUP_INDIRECT`.
+
+Pointer to the first `setup_data` is saved in DRTM Policy Entry. As these
+structures consist of physical addresses and other metadata that may change
+between boots, only the actual data is measured. For direct entries this is
+`data`, and for indirect -- memory pointed by `addr`. All `setup_data`s are
+measured in order, each as a separate entry in the TPM event log.
+
+Measuring OS to MLE data
+------------------------
+
+Version 1 of the OS-MLE heap structure has no fields to measure. It just has
+addresses and sizes and a scratch buffer. As such, this entry is skipped as of
+now, but this may change in the future versions.
 
 Appendix B: Intel TXT OS2MLE
 ============================
