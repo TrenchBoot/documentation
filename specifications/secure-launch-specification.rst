@@ -486,15 +486,15 @@ The list of valid entity types for D-RTM Policy entries.
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_ET_UNSPECIFIED  0x0000
-    #define SLR_ET_SLRT         0x0001
-    #define SLR_ET_BOOT_PARAMS  0x0002
-    #define SLR_ET_SETUP_DATA   0x0003
-    #define SLR_ET_CMDLINE      0x0004
-    #define SLR_ET_UEFI_MEMMAP  0x0005
-    #define SLR_ET_RAMDISK      0x0006
-    #define SLR_ET_TXT_OS2MLE   0x0010
-    #define SLR_ET_UNUSED       0xffff
+    #define SLR_ET_UNSPECIFIED        0x0000
+    #define SLR_ET_SLRT               0x0001
+    #define SLR_ET_LINUX_BOOT_PARAMS  0x0002
+    #define SLR_ET_LINUX_SETUP_DATA   0x0003
+    #define SLR_ET_CMDLINE            0x0004
+    #define SLR_ET_UEFI_MEMMAP        0x0005
+    #define SLR_ET_RAMDISK            0x0006
+    #define SLR_ET_TXT_OS2MLE         0x0010
+    #define SLR_ET_UNUSED             0xffff
 
 `SLR_ET_UNUSED` can be used if an entry in the DRTM Policy is to be ignored.
 Note that **RECOMMENDED** solution is to just not include the entry in question,
