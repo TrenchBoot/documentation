@@ -478,6 +478,10 @@ environment, that attribute will be published as an entity type. A generic
         char evt_info[TPM_EVENT_INFO_LENGTH];
     };
 
+In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+**MAY** not be terminated with `\0` if it fills the whole `evt_info`.
+
 D-RTM Policy Entry Entity Types
 '''''''''''''''''''''''''''''''
 
@@ -574,6 +578,9 @@ Saved MTRR State
         struct txt_mtrr_pair mtrr_pair[TXT_VARIABLE_MTRRS_LENGTH];
     };
 
+In the current version (one) of the specification, `TXT_VARIABLE_MTRRS_LENGTH`
+is defined as 32 entries. All fields in unused entries **MUST** be set to 0.
+
 AMD Secure Launch Platforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -669,6 +676,10 @@ be measured.
         u32 size;
         char evt_info[TPM_EVENT_INFO_LENGTH];
     } __packed;
+
+In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+**MAY** not be terminated with `\0` if it fills the whole `evt_info`.
 
 Appendix A: Measuring the DRTM Policy
 =====================================
