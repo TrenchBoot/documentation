@@ -493,6 +493,8 @@ The list of valid entity types for D-RTM Policy entries.
     #define SLR_ET_CMDLINE            0x0004
     #define SLR_ET_UEFI_MEMMAP        0x0005
     #define SLR_ET_RAMDISK            0x0006
+    #define SLR_ET_MULTIBOOT2_INFO    0x0007
+    #define SLR_ET_MULTIBOOT2_MODULE  0x0008
     #define SLR_ET_TXT_OS2MLE         0x0010
     #define SLR_ET_UNUSED             0xffff
 
@@ -790,6 +792,16 @@ Measuring OS to MLE data
 Version 1 of the OS-MLE heap structure has no fields to measure. It just has
 addresses and sizes and a scratch buffer. As such, this entry is skipped as of
 now, but this may change in the future versions.
+
+Measuring Multiboot2 boot information
+-------------------------------------
+
+Multiboot2 information data structure contains set of Tag-Length-Value (TLV)
+entries, however, for the sake of measurement it can be treated as a consecutive
+range of memory. Only the total length of this structure is important, it can be
+read from first field of that structure, i.e. `u32 total_size`. This is how the
+kernel obtains the size, so measuring code should also use it, hence this entity
+has `SLR_POLICY_IMPLICIT_SIZE` flag set.
 
 Appendix B: Intel TXT OS2MLE
 ============================
