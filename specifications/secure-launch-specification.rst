@@ -499,6 +499,8 @@ The list of valid entity types for D-RTM Policy entries.
     #define SLR_ET_RAMDISK            0x0006
     #define SLR_ET_MULTIBOOT2_INFO    0x0007
     #define SLR_ET_MULTIBOOT2_MODULE  0x0008
+    // values 0x0009-0x000f reserved for future use
+    // TXT-specific:
     #define SLR_ET_TXT_OS2MLE         0x0010
     #define SLR_ET_UNUSED             0xffff
 
@@ -518,6 +520,15 @@ The list of valid flags for D-RTM Policy entries.
 
     #define SLR_POLICY_FLAG_MEASURED    0x1
     #define SLR_POLICY_IMPLICIT_SIZE    0x2
+
+`SLR_POLICY_FLAG_MEASURED` **MAY** be used by DCE and/or DLME to mark which
+entries were measured, in case not all of them are measured at the same time.
+For example, limited in size DCE can use TPM commands for hashing instead of
+calculating the hashes to save space. DLME usually doesn't have strict size
+constraints, so it may include functions that are much faster than sending the
+data to be hashed by TPM. In such cases, `SLR_POLICY_FLAG_MEASURED` is set by
+DCE for entries it measures, and DLME skips those. Note that all entries still
+**MUST** be measured in order.
 
 Only some of the entry types can have `SLR_POLICY_IMPLICIT_SIZE` flag set. Such
 entries have their `size` specified as zero, and they **SHALL** be measured as
