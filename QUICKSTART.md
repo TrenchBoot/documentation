@@ -1,11 +1,16 @@
 # Quick Start Guide
 
-A quick start guide to getting a system running with the latest TrenchBoot
-Secure Launch bits. Note that this is a bare bones document meant to help
+A quick start guide to getting a Linux system running with the latest Secure
+Launch bits from TrenchBoot. Note that this is a bare bones document meant to help
 someone get up and running with Secure Launch. It does not contain detailed
 descriptions of all the technologies and terminology involved in doing a
-secure late launch. The repository this document resides in contains a plethora
+Secure Launch. The repository this document resides in contains a plethora
 of other resources that can be used to understand things more broadly.
+
+For topics not addressed by this document, please contact TrenchBoot developers
+via the community site:
+
+ - [Community](https://trenchboot.org/community)
 
 ## Platforms
 
@@ -22,13 +27,18 @@ does support TXT):
 
 `# grep smx /proc/cpuinfo`
 
+Also note, the TrenchBoot project has a hardware test matrix though only the
+Intel systems are relevant at present:
+
+ - [Test Matrix](https://trenchboot.org/documentation/test_matrix/)
+
 ## Linux
 
-TrenchBoot and the Secure Launch feature are an active project that is in the
-process of being upstreamed to the Linux project.
+TrenchBoot is an active open-source project for system launch integrity, from
+which the Secure Launch feature is being upstreamed to the Linux kernel.
 
 The following repository and branch have the latest release of the Secure
-Launch feature. This is a vanilla Linux kernel based of a torvolds/master branch
+Launch feature. This is a vanilla Linux kernel based off a torvalds/master branch
 snapshot at the time time patch set was assembled. The patches could be
 applied to different distros of Linux, probably requiring some rebasing:
 
@@ -131,10 +141,10 @@ is shown here for brevity, the rest is snippped):
 *
 00008000
 ```
-The final measurements starting with with the description "Measured..." are put in the
+The final measurements starting with the description "Measured..." are put in the
 log by the Secure Launch kernel code after successfully running. During a poweroff,
 restart or a kexec of another kernel, the following log lines will show TXT being
-properly diabled and safely locked:
+properly disabled and SMX mode being exited.:
 
 ```
 [  696.907094] slaunch: TXT clear secrets bit and unlock memory complete.
