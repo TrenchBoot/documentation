@@ -458,6 +458,11 @@ measure. As an SL Entry is able to measure an attribute of the launch
 environment, that attribute will be published as an entity type. A generic
 "unspecified" entity type is also available for measuring a range of memory.
 
+.. note::
+   In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+   defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+   **MAY** not be terminated with `\0` if it fills the whole `evt_info`.
+
 :pcr: PCR to store the measurement.
 :entity_type: Identifies the entity type of the entry.
 :flags: Flag field to store state for this entry.
@@ -477,10 +482,6 @@ environment, that attribute will be published as an entity type. A generic
         u64 size;
         char evt_info[TPM_EVENT_INFO_LENGTH];
     };
-
-In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
-defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
-**MAY** not be terminated with `\0` if it fills the whole `evt_info`.
 
 D-RTM Policy Entry Entity Types
 '''''''''''''''''''''''''''''''
@@ -515,24 +516,30 @@ D-RTM Policy Entry Flags
 
 The list of valid flags for D-RTM Policy entries.
 
+.. note::
+   `SLR_POLICY_FLAG_MEASURED` **MAY** be used by DCE and/or DLME to mark which
+   entries were measured, in case not all of them are measured at the same time.
+   For example, limited in size DCE can use TPM commands for hashing instead of
+   calculating the hashes to save space. DLME usually doesn't have strict size
+   constraints, so it may include functions that are much faster than sending
+   the data to be hashed by TPM. In such cases, `SLR_POLICY_FLAG_MEASURED` is
+   set by DCE for entries it measures, and DLME skips those. Another example is
+   a complex DLME like a Linux kernel that doesn't have TPM drivers available at
+   the point where first measurements are taken. In that case kernel may
+   calculate the hash earlier and send it to the TPM after drivers become
+   available, but that **MUST** happen before execution is passed to another,
+   not measured (as reflected by PCR value) component. Note that all entries
+   **MUST** be measured in order.
+
+   Some of the entry types can have `SLR_POLICY_IMPLICIT_SIZE` flag set. Such
+   entries have their `size` specified as zero, and they **SHALL** be measured
+   as described in Appendix A.
+
 .. code-block:: c
     :linenos: 1
 
     #define SLR_POLICY_FLAG_MEASURED    0x1
     #define SLR_POLICY_IMPLICIT_SIZE    0x2
-
-`SLR_POLICY_FLAG_MEASURED` **MAY** be used by DCE and/or DLME to mark which
-entries were measured, in case not all of them are measured at the same time.
-For example, limited in size DCE can use TPM commands for hashing instead of
-calculating the hashes to save space. DLME usually doesn't have strict size
-constraints, so it may include functions that are much faster than sending the
-data to be hashed by TPM. In such cases, `SLR_POLICY_FLAG_MEASURED` is set by
-DCE for entries it measures, and DLME skips those. Note that all entries still
-**MUST** be measured in order.
-
-Only some of the entry types can have `SLR_POLICY_IMPLICIT_SIZE` flag set. Such
-entries have their `size` specified as zero, and they **SHALL** be measured as
-described in Appendix A.
 
 Intel TXT Platforms
 ~~~~~~~~~~~~~~~~~~~
@@ -564,6 +571,11 @@ across to the post-launch environment.
 Saved MTRR State
 """"""""""""""""
 
+.. note::
+   In the current version (one) of the specification,
+   `TXT_VARIABLE_MTRRS_LENGTH` is defined as 32 entries. All fields in unused
+   entries **MUST** be set to 0.
+
 :code:`struct slr_txt_mtrr_state`
 
 :default_mem_type: The default memory type for regions not covered by an MTRR
@@ -588,9 +600,6 @@ Saved MTRR State
         u64 mtrr_vcnt;
         struct txt_mtrr_pair mtrr_pair[TXT_VARIABLE_MTRRS_LENGTH];
     };
-
-In the current version (one) of the specification, `TXT_VARIABLE_MTRRS_LENGTH`
-is defined as 32 entries. All fields in unused entries **MUST** be set to 0.
 
 AMD Secure Launch Platforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -672,6 +681,11 @@ UEFI Config Entry
 A config entry represents an entity that the UEFI bootloader is requesting to
 be measured.
 
+.. note::
+   In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+   defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+   **MAY** not be terminated with `\0` if it fills the whole `evt_info`.
+
 :pcr: PCR to store the measurement.
 :cfg: The address or value to measure.
 :size: The size to measure.
@@ -688,11 +702,7 @@ be measured.
         char evt_info[TPM_EVENT_INFO_LENGTH];
     } __packed;
 
-In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
-defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
-**MAY** not be terminated with `\0` if it fills the whole `evt_info`.
-
-Appendix A: Measuring the DRTM Policy
+Appendix A: Recommendations for Measuring the DRTM Policy
 =====================================
 
 While the D-RTM TPM event log is itself proof of the D-RTM policy used by
@@ -747,18 +757,20 @@ Using this logic, the resulting operation to measure the policy would be as:
 The result, `M_policy`, will be a hash of the policy that can then be extended
 into one, or more if using as a cap value, PCR(s).
 
-Note that current SLRT specification version doesn't require measuring the
-policy, neither does it have appropriate policy entry type for that measurement.
+.. note::
+   The SLRT specification version doesn't require measuring the policy, neither
+   does it have appropriate policy entry type for that measurement.
 
 Measuring the SLRT
 ------------------
 
-In revision one of the SLRT, the only table that needs to be measured is the
-vendor info table, i.e. one of `SLR_ENTRY_INTEL_INFO`, `SLR_ENTRY_AMD_INFO` or
-`SLR_ENTRY_ARM_INFO`. Everything else is meta-data, addresses and sizes. Note
-the size of what to measure is not set. The flag `SLR_POLICY_IMPLICIT_SIZE`
-leaves it to the measuring code to choose and use proper structure's size.
-The structure is measured as a whole, together with its header.
+If there is a need to measure the SLRT, the recommendation is that the vendor
+info table, i.e. one of `SLR_ENTRY_INTEL_INFO`, `SLR_ENTRY_AMD_INFO` or
+`SLR_ENTRY_ARM_INFO`, is the only one that should be measured. The remainder of
+the SLRT is meta-data, addresses and sizes. Note the size of what to measure is
+not set. The flag `SLR_POLICY_IMPLICIT_SIZE` leaves it to the measuring code to
+choose and use proper structure's size. The structure is measured as a whole,
+together with its header.
 
 Measuring the Linux setup_data
 ------------------------------
@@ -811,7 +823,7 @@ measured in order, each as a separate entry in the TPM event log.
 Measuring OS to MLE data
 ------------------------
 
-Version 1 of the OS-MLE heap structure has no fields to measure. It just has
+The SLRT defined OS-MLE heap structure has no fields to measure. It just has
 addresses and sizes and a scratch buffer. As such, this entry is skipped as of
 now, but this may change in the future versions.
 
