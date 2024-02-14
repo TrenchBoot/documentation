@@ -61,6 +61,7 @@ Acronyms
 :DLE: Dynamic Launch Event (*eg. Intel GETSEC[SENTER]/AMD SKINIT*)
 :DLME: Dynamic Launch Measured Environment (*eg. Operating System/Hypervisor*)
 :DRTM: Dynamic Root of Trust Measurement
+:SLRT: Secure Launch Resource Table
 
 
 Secure Launch Architecture
@@ -702,6 +703,7 @@ be measured.
         char evt_info[TPM_EVENT_INFO_LENGTH];
     } __packed;
 
+
 Appendix A: Recommendations for Measuring the DRTM Policy
 =====================================
 
@@ -837,6 +839,7 @@ range of memory. Only the total length of this structure is important, it can be
 read from first field of that structure, i.e. `u32 total_size`. This is how the
 kernel obtains the size, so measuring code should also use it, hence this entity
 has `SLR_POLICY_IMPLICIT_SIZE` flag set.
+
 
 Appendix B: Intel TXT OS2MLE
 ============================
