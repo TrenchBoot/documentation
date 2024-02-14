@@ -717,8 +717,9 @@ TPM Extend Operation
 --------------------
 
 For clarity, the extend operation, denoted here on out as E(), is an order
-preserving, recursive, mapping function. Consider any hash function, denoted as
-H(), the extend operation, is defined as:
+preserving, recursive, mapping function. Operation marked by | operator is a
+concatenation, not a logical OR. Consider any hash function, denoted as H(),
+the extend operation is defined as:
 
 |    Given,
 |        0 = sizeof(H) bytes of 0
