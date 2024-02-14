@@ -579,7 +579,7 @@ Saved MTRR State
 :code:`struct slr_txt_mtrr_state`
 
 :default_mem_type: The default memory type for regions not covered by an MTRR
-:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_vcnt array
+:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_pair array
 :mtrr_pair: Array of variable MTRR pairs to restore post launch
 
 :code:`struct slr_txt_mtrr_pair`
