@@ -793,7 +793,7 @@ parameters and other data from bootloader to Linux kernel.
         u64 next;
         u32 type;
         u32 len;
-        u8  data[0];
+        u8  data[];
     };
 
 The above structure is limited by maximum size that can be specified, as well as
@@ -852,7 +852,16 @@ it in the TXT Heap definition. This area is referred to as the OS2MLE structure.
 The OS2MLE structure for Secure Launch is defined as follows,
 
 :version: Revision of the os2mle table
-:slrt: Pointer to the SLRT
+:boot_params_addr:
+    Physical address of boot parameters, format depends on target kernel
+:slrt: Physical address of the SLRT
+:txt_info:
+    Physical address of TXT info, located in SLRT (simply a convenience to avoid
+    parsing SLRT in assembly)
+:ap_wake_block:
+    Physical address of a block of memory where the APs are parked after waking
+    them up post launch
+:ap_wake_block_size: Size of the block mentioned above
 :mle_scratch: Scratch area for use by SL Entry early code
 
 .. code-block:: c
@@ -860,8 +869,12 @@ The OS2MLE structure for Secure Launch is defined as follows,
 
     struct os2mle {
         u32 version;
-        struct slr_table *slrt;
-        u8 mle_scratch[64];
-    }
+        u32 boot_params_addr;
+        u64 slrt;
+        u64 txt_info;
+        u32 ap_wake_block;
+        u32 ap_wake_block_size;
+        u8  mle_scratch[64];
+    };
 
 [1] https://www.intel.com/content/www/us/en/content-details/315168/intel-trusted-execution-technology-intel-txt-software-development-guide.html?wapkw=txt
