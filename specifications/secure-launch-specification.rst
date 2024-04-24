@@ -7,7 +7,7 @@ Secure Launch Specification
 
 .. class:: center
 
-**Version:** 0.5.0
+**Version:** 0.6.0-draft
 
 .. class:: center
 
@@ -61,6 +61,7 @@ Acronyms
 :DLE: Dynamic Launch Event (*eg. Intel GETSEC[SENTER]/AMD SKINIT*)
 :DLME: Dynamic Launch Measured Environment (*eg. Operating System/Hypervisor*)
 :DRTM: Dynamic Root of Trust Measurement
+:SLRT: Secure Launch Resource Table
 
 
 Secure Launch Architecture
@@ -138,7 +139,7 @@ Sequence
         +---------------------------------->|              |             |
         |                                   |              |             |
         |                                   |              |             |
-        |                  Initalize Table                 |             |
+        |                  Initialize Table                |             |
         +------------------------------------------------->|             |
         |                                                  |             |
         |    Invoke       |                 |              |             |
@@ -173,7 +174,7 @@ Secure Launch Interfaces
 ========================
 
 There are two interfaces to be defined here, the DLE Handler Specifications and
-the SLRT Specification. 
+the SLRT Specification.
 
 DLE Handler Specification
 -------------------------
@@ -185,7 +186,7 @@ Platform Requirements
 
 | **1** - x86 Platforms
 | **1.1** - The DLE Handler **MAY** be invoked with the CPU in either 32bit
-|       protected mode or 64bit long mode 
+|       protected mode or 64bit long mode
 | **1.2** - The SLRT **SHALL** be passed to the DLE Handler in the EDI/RDI CPU
 |       register
 | **1.3** - All other registers besides EDI/RDI are not guarenteed
@@ -217,7 +218,7 @@ Platform Requirements
 | **1** - General Requirements
 | **1.1** - The SLRT **MUST** begin with the magic value `0x4452544d`.
 | **1.2** - A properly formatted SLRT **SHALL** consist of a table header,
-|	zero or more table entries, and an end entry.
+|       zero or more table entries, and an end entry.
 | **1.3** - The SLRT **SHOULD** be in contiguous physical memory.
 | **1.3.1** - A preallocated, fixed size table is **OPTIONAL** through the use
 |       of the `max_size` field.
@@ -333,16 +334,16 @@ The list of valid entry tags.
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_ENTRY_INVALID	        0x0000
-    #define SLR_ENTRY_DL_INFO	        0x0001
-    #define SLR_ENTRY_LOG_INFO	        0x0002
-    #define SLR_ENTRY_DRTM_POLICY	0x0003
-    #define SLR_ENTRY_INTEL_INFO	0x0004
-    #define SLR_ENTRY_AMD_INFO	        0x0005
-    #define SLR_ENTRY_ARM_INFO	        0x0006
-    #define SLR_ENTRY_UEFI_INFO	        0x0007
-    #define SLR_ENTRY_UEFI_CONFIG	0x0008
-    #define SLR_ENTRY_END		0xffff
+    #define SLR_ENTRY_INVALID           0x0000
+    #define SLR_ENTRY_DL_INFO           0x0001
+    #define SLR_ENTRY_LOG_INFO          0x0002
+    #define SLR_ENTRY_DRTM_POLICY       0x0003
+    #define SLR_ENTRY_INTEL_INFO        0x0004
+    #define SLR_ENTRY_AMD_INFO          0x0005
+    #define SLR_ENTRY_ARM_INFO          0x0006
+    #define SLR_ENTRY_UEFI_INFO         0x0007
+    #define SLR_ENTRY_UEFI_CONFIG       0x0008
+    #define SLR_ENTRY_END               0xffff
 
 Dynamic Launch Configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -430,14 +431,14 @@ D-RTM Measurement Policy
 
 The measurement policy is for conveying to the SL Entry on what it should
 measure, where that entity is located, which PCR the measurement should be
-stored, and how the event should be identified in the TPM event log. 
+stored, and how the event should be identified in the TPM event log.
 
 .. warning::
    The SL Entry **SHALL** fail if it determines an invalid policy is present.
 
 :tag: SLR_ENTRY_ENTRY_POLICY
 :revision: A revision field to identify the version of policy being used.
-:nr_entries: The total number of policy entries available.
+:nr_entries: The total number of policy entries in the array.
 
 .. code-block:: c
     :linenos: 1
@@ -448,7 +449,7 @@ stored, and how the event should be identified in the TPM event log.
         u16 nr_entries;
         /* policy_entries[] */
     };
-  
+
 
 DRTM Policy Entry
 """""""""""""""""
@@ -457,6 +458,11 @@ A policy entry represents an entity that the SL Entry is being requested to
 measure. As an SL Entry is able to measure an attribute of the launch
 environment, that attribute will be published as an entity type. A generic
 "unspecified" entity type is also available for measuring a range of memory.
+
+.. note::
+   In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+   defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+   **MAY** not be terminated with `\0` if it fills the whole `evt_info`.
 
 :pcr: PCR to store the measurement.
 :entity_type: Identifies the entity type of the entry.
@@ -486,26 +492,55 @@ The list of valid entity types for D-RTM Policy entries.
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_ET_UNSPECIFIED  0x0000
-    #define SLR_ET_SLRT         0x0001
-    #define SLR_ET_BOOT_PARAMS  0x0002
-    #define SLR_ET_SETUP_DATA   0x0003
-    #define SLR_ET_CMDLINE      0x0004
-    #define SLR_ET_UEFI_MEMMAP  0x0005
-    #define SLR_ET_RAMDISK      0x0006
-    #define SLR_ET_TXT_OS2MLE   0x0010
-    #define SLR_ET_UNUSED       0xffff
+    #define SLR_ET_UNSPECIFIED        0x0000
+    #define SLR_ET_SLRT               0x0001
+    #define SLR_ET_LINUX_BOOT_PARAMS  0x0002
+    #define SLR_ET_LINUX_SETUP_DATA   0x0003
+    #define SLR_ET_CMDLINE            0x0004
+    #define SLR_ET_UEFI_MEMMAP        0x0005
+    #define SLR_ET_RAMDISK            0x0006
+    #define SLR_ET_MULTIBOOT2_INFO    0x0007
+    #define SLR_ET_MULTIBOOT2_MODULE  0x0008
+    // values 0x0009-0x000f reserved for future use
+    // TXT-specific:
+    #define SLR_ET_TXT_OS2MLE         0x0010
+    #define SLR_ET_UNUSED             0xffff
+
+`SLR_ET_UNUSED` can be used if an entry in the DRTM Policy is to be ignored.
+Note that **RECOMMENDED** solution is to just not include the entry in question,
+this entity type is left as a final resort if entry has to be removed after SLRT
+was created in memory and defragmenting it after removing an entry isn't
+feasible.
 
 D-RTM Policy Entry Flags
 ''''''''''''''''''''''''
 
 The list of valid flags for D-RTM Policy entries.
 
+.. note::
+   `SLR_POLICY_FLAG_MEASURED` **MAY** be used by DCE and/or DLME to mark which
+   entries were measured, in case not all of them are measured at the same time.
+   For example, limited in size DCE can use TPM commands for hashing instead of
+   calculating the hashes to save space. DLME usually doesn't have strict size
+   constraints, so it may include functions that are much faster than sending
+   the data to be hashed by TPM. In such cases, `SLR_POLICY_FLAG_MEASURED` is
+   set by DCE for entries it measures, and DLME skips those. Another example is
+   a complex DLME like a Linux kernel that doesn't have TPM drivers available at
+   the point where first measurements are taken. In that case kernel may
+   calculate the hash earlier and send it to the TPM after drivers become
+   available, but that **MUST** happen before execution is passed to another,
+   not measured (as reflected by PCR value) component. Note that all entries
+   **MUST** be measured in order.
+
+   Some of the entry types can have `SLR_POLICY_IMPLICIT_SIZE` flag set. Such
+   entries have their `size` specified as zero, and they **SHALL** be measured
+   as described in Appendix A.
+
 .. code-block:: c
     :linenos: 1
 
-    #define SLR_POLICY_FLAG_MEASURED	0x1
-    #define SLR_POLICY_IMPLICIT_SIZE	0x2
+    #define SLR_POLICY_FLAG_MEASURED    0x1
+    #define SLR_POLICY_IMPLICIT_SIZE    0x2
 
 Intel TXT Platforms
 ~~~~~~~~~~~~~~~~~~~
@@ -537,10 +572,15 @@ across to the post-launch environment.
 Saved MTRR State
 """"""""""""""""
 
+.. note::
+   In the current version (one) of the specification,
+   `TXT_VARIABLE_MTRRS_LENGTH` is defined as 32 entries. All fields in unused
+   entries **MUST** be set to 0.
+
 :code:`struct slr_txt_mtrr_state`
 
 :default_mem_type: The default memory type for regions not covered by an MTRR
-:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_vcnt array
+:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_pair array
 :mtrr_pair: Array of variable MTRR pairs to restore post launch
 
 :code:`struct slr_txt_mtrr_pair`
@@ -633,7 +673,7 @@ measured.
         u16 nr_entries;
         /* slr_uefi_cfg_entries[] */
     };
-  
+
 UEFI Config Entry
 """"""""""""""""
 
@@ -641,6 +681,11 @@ UEFI Config Entry
 
 A config entry represents an entity that the UEFI bootloader is requesting to
 be measured.
+
+.. note::
+   In the current version (one) of the specification, `TPM_EVENT_INFO_LENGTH` is
+   defined as 32 bytes. All unused bytes **MUST** be set to `\0`, but the string
+   **MAY** not be terminated with `\0` if it fills the whole `evt_info`.
 
 :pcr: PCR to store the measurement.
 :cfg: The address or value to measure.
@@ -658,7 +703,8 @@ be measured.
         char evt_info[TPM_EVENT_INFO_LENGTH];
     } __packed;
 
-Appendix A: Measuring the DRTM Policy
+
+Appendix A: Recommendations for Measuring the DRTM Policy
 =====================================
 
 While the D-RTM TPM event log is itself proof of the D-RTM policy used by
@@ -673,8 +719,9 @@ TPM Extend Operation
 --------------------
 
 For clarity, the extend operation, denoted here on out as E(), is an order
-preserving, recursive, mapping function. Consider any hash function, denoted as
-H(), the extend operation, is defined as:
+preserving, recursive, mapping function. Operation marked by | operator is a
+concatenation, not a logical OR. Consider any hash function, denoted as H(),
+the extend operation is defined as:
 
 |    Given,
 |        0 = sizeof(H) bytes of 0
@@ -686,7 +733,7 @@ H(), the extend operation, is defined as:
 |        }
 
 Measuring the Policy
----------------------
+--------------------
 
 Measuring the policy is not as simple as hashing the block of memory containing
 the policy. This will not work as the policy may contain memory addresses that
@@ -713,6 +760,87 @@ Using this logic, the resulting operation to measure the policy would be as:
 The result, `M_policy`, will be a hash of the policy that can then be extended
 into one, or more if using as a cap value, PCR(s).
 
+.. note::
+   The SLRT specification version doesn't require measuring the policy, neither
+   does it have appropriate policy entry type for that measurement.
+
+Measuring the SLRT
+------------------
+
+If there is a need to measure the SLRT, the recommendation is that the vendor
+info table, i.e. one of `SLR_ENTRY_INTEL_INFO`, `SLR_ENTRY_AMD_INFO` or
+`SLR_ENTRY_ARM_INFO`, is the only one that should be measured. The remainder of
+the SLRT is meta-data, addresses and sizes. Note the size of what to measure is
+not set. The flag `SLR_POLICY_IMPLICIT_SIZE` leaves it to the measuring code to
+choose and use proper structure's size. The structure is measured as a whole,
+together with its header.
+
+Measuring the Linux setup_data
+------------------------------
+
+Single linked list of `struct setup_data` is a way to pass extensible boot
+parameters and other data from bootloader to Linux kernel.
+
+:next: Pointer to next `setup_data` structure, or NULL if this is the last one
+:type: Type of entry
+:len: Length of following data
+:data: Parameters passed from bootloader
+
+.. code-block:: c
+    :linenos: 1
+
+    struct setup_data {
+        u64 next;
+        u32 type;
+        u32 len;
+        u8  data[];
+    };
+
+The above structure is limited by maximum size that can be specified, as well as
+by the fact that data must be immediately following the header. To handle these
+situations, a `setup_indirect` structure was added in later Linux boot protocol:
+
+:type: Type of entry, logically ORed with `SETUP_INDIRECT`
+:len: Length of data
+:addr: Pointer to data
+
+.. code-block:: c
+    :linenos: 1
+
+    struct setup_indirect {
+        u32 type;
+        u32 reserved;  /* Reserved, must be set to zero. */
+        u64 len;
+        u64 addr;
+    };
+
+If indirect entries are used, the `setup_indirect` is put as `setup_data->data`,
+and `setup_data->type` is set to `SETUP_INDIRECT`.
+
+Pointer to the first `setup_data` is saved in DRTM Policy Entry. As these
+structures consist of physical addresses and other metadata that may change
+between boots, only the actual data is measured. For direct entries this is
+`data`, and for indirect -- memory pointed by `addr`. All `setup_data`s are
+measured in order, each as a separate entry in the TPM event log.
+
+Measuring OS to MLE data
+------------------------
+
+The SLRT defined OS-MLE heap structure has no fields to measure. It just has
+addresses and sizes and a scratch buffer. As such, this entry is skipped as of
+now, but this may change in the future versions.
+
+Measuring Multiboot2 boot information
+-------------------------------------
+
+Multiboot2 information data structure contains set of Tag-Length-Value (TLV)
+entries, however, for the sake of measurement it can be treated as a consecutive
+range of memory. Only the total length of this structure is important, it can be
+read from first field of that structure, i.e. `u32 total_size`. This is how the
+kernel obtains the size, so measuring code should also use it, hence this entity
+has `SLR_POLICY_IMPLICIT_SIZE` flag set.
+
+
 Appendix B: Intel TXT OS2MLE
 ============================
 
@@ -724,7 +852,16 @@ it in the TXT Heap definition. This area is referred to as the OS2MLE structure.
 The OS2MLE structure for Secure Launch is defined as follows,
 
 :version: Revision of the os2mle table
-:slrt: Pointer to the SLRT
+:boot_params_addr:
+    Physical address of boot parameters, format depends on target kernel
+:slrt: Physical address of the SLRT
+:txt_info:
+    Physical address of TXT info, located in SLRT (simply a convenience to avoid
+    parsing SLRT in assembly)
+:ap_wake_block:
+    Physical address of a block of memory where the APs are parked after waking
+    them up post launch
+:ap_wake_block_size: Size of the block mentioned above
 :mle_scratch: Scratch area for use by SL Entry early code
 
 .. code-block:: c
@@ -732,8 +869,12 @@ The OS2MLE structure for Secure Launch is defined as follows,
 
     struct os2mle {
         u32 version;
-        struct slr_table *slrt;
-        u8 mle_scratch[64];
-    }
+        u32 boot_params_addr;
+        u64 slrt;
+        u64 txt_info;
+        u32 ap_wake_block;
+        u32 ap_wake_block_size;
+        u8  mle_scratch[64];
+    };
 
 [1] https://www.intel.com/content/www/us/en/content-details/315168/intel-trusted-execution-technology-intel-txt-software-development-guide.html?wapkw=txt
