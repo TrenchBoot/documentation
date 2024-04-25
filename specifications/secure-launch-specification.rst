@@ -354,22 +354,26 @@ This is the main configuration entry, providing the necessary information to
 invoke the DLE Handler and for the DLE Handler to invoke the DL.
 
 :tag: SLR_ENTRY_DL_INFO
+:dce_size: The size of the DCE.
+:dce_base: The base address where the DCE is located.
+:dlme_size: The size of the DLME.
+:dlme_base: The base address where the DLME is located.
+:dlme_entry: The offset into the DLME of the entry point.
 :bl_context: Allows the bootloader to provide a reference to a context object.
 :dl_handler: The address to the entry point for the DLE Handler.
-:dce_base: The base address where the DCE is located.
-:dce_size: The size of the DCE.
-:dlme_entry: The address for the entry point of the DLME.
 
 .. code-block:: c
     :linenos: 1
 
     struct slr_entry_dl_info {
         struct slr_entry_hdr hdr;
+        u32 dce_size;
+        u64 dce_base;
+        u64 dlme_size;
+        u64 dlme_base;
+        u64 dlme_entry;
         struct slr_bl_context bl_context;
         u64 dl_handler;
-        u64 dce_base;
-        u32 dce_size;
-        u64 dlme_entry;
     };
 
 Boot Loader Context
@@ -392,7 +396,7 @@ Handler to use.
 
     struct slr_bl_context {
         u16 bootloader;
-        u16 reserved;
+        u16 reserved[3];
         u64 context;
     };
 
@@ -410,8 +414,8 @@ This entry describes where and what type of TPM event log should be used.
 
 :tag: SLR_ENTRY_LOG_INFO
 :format: The type of TPM event log format to use.
-:addr: The base address where the log should reside.
 :size: The size allocated for the log.
+:addr: The base address where the log should reside.
 
 .. code-block:: c
     :linenos: 1
@@ -419,9 +423,9 @@ This entry describes where and what type of TPM event log should be used.
     struct slr_entry_log_info {
         struct slr_entry_hdr hdr;
         u16 format;
-        u16 reserved;
-        u64 addr;
+        u16 reserved[3];
         u32 size;
+        u64 addr;
     };
 
 D-RTM Measurement Policy
@@ -447,7 +451,7 @@ stored, and how the event should be identified in the TPM event log.
         struct slr_entry_hdr hdr;
         u16 revision;
         u16 nr_entries;
-        /* policy_entries[] */
+        struct slr_policy_entry policy_entries[];
     };
 
 
@@ -467,8 +471,8 @@ environment, that attribute will be published as an entity type. A generic
 :pcr: PCR to store the measurement.
 :entity_type: Identifies the entity type of the entry.
 :flags: Flag field to store state for this entry.
-:entity: The address to measure.
 :size: The size of entity if not flagged as implicit.
+:entity: The address to measure.
 :evt_info: Label to be recorded in TPM Event Log.
 
 .. code-block:: c
@@ -479,8 +483,8 @@ environment, that attribute will be published as an entity type. A generic
         u16 entity_type;
         u16 flags;
         u16 reserved;
-        u64 entity;
         u64 size;
+        u64 entity;
         char evt_info[TPM_EVENT_INFO_LENGTH];
     };
 
@@ -557,14 +561,17 @@ Intel TXT requires for the pre-launch environment to pass MSR and MTRR state
 across to the post-launch environment.
 
 :tag: SLR_ENTRY_INTEL_INFO
-:saved_misc_enable_msr: Saved MSR values
-:saved_bsp_mtrrs: Saved BSP MTRRs
+:txt_heap: Base address where the TXT heap resides.
+:saved_misc_enable_msr: Saved misc enable MSR values.
+:saved_bsp_mtrrs: Saved BSP MTRRs.
 
 .. code-block:: c
     :linenos: 1
 
     struct slr_entry_intel_info {
         struct slr_entry_hdr hdr;
+        u16 reserved[2];
+        u64 txt_heap;
         u64 saved_misc_enable_msr;
         struct txt_mtrr_state saved_bsp_mtrrs;
     };
@@ -579,14 +586,14 @@ Saved MTRR State
 
 :code:`struct slr_txt_mtrr_state`
 
-:default_mem_type: The default memory type for regions not covered by an MTRR
-:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_pair array
-:mtrr_pair: Array of variable MTRR pairs to restore post launch
+:default_mem_type: The default memory type for regions not covered by an MTRR.
+:mtrr_vcnt: Number of variable MTRR pairs in the mtrr_pair array.
+:mtrr_pair: Array of variable MTRR pairs to restore post launch.
 
 :code:`struct slr_txt_mtrr_pair`
 
-:mtrr_physbase: Physical base address for variable MTRR
-:mtrr_physmask: Physical mask for the variable MTRR
+:mtrr_physbase: Physical base address for variable MTRR.
+:mtrr_physmask: Physical mask for the variable MTRR.
 
 .. code-block:: c
     :linenos: 1
@@ -671,7 +678,7 @@ measured.
         struct slr_entry_hdr hdr;
         u16 revision;
         u16 nr_entries;
-        /* slr_uefi_cfg_entries[] */
+        struct slr_uefi_cfg_entry uefi_cfg_entries[];
     };
 
 UEFI Config Entry
@@ -688,8 +695,8 @@ be measured.
    **MAY** not be terminated with `\0` if it fills the whole `evt_info`.
 
 :pcr: PCR to store the measurement.
-:cfg: The address or value to measure.
 :size: The size to measure.
+:cfg: The address or value to measure.
 :evt_info: Label to be recorded in TPM Event Log.
 
 .. code-block:: c
@@ -698,8 +705,8 @@ be measured.
     struct slr_uefi_cfg_entry {
         u16 pcr;
         u16 reserved;
-        u64 cfg; /* address or value */
         u32 size;
+        u64 cfg; /* address or value */
         char evt_info[TPM_EVENT_INFO_LENGTH];
     } __packed;
 
