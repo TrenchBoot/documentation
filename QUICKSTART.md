@@ -4,8 +4,11 @@ A quick start guide to getting a Linux system running with the latest Secure
 Launch bits from TrenchBoot. Note that this is a bare bones document meant to help
 someone get up and running with Secure Launch. It does not contain detailed
 descriptions of all the technologies and terminology involved in doing a
-Secure Launch. The repository this document resides in contains a plethora
-of other resources that can be used to understand things more broadly.
+Secure Launch. The repository this document resides in as well as the
+Linux Secure Launch documentation submitted with the Linux patch sets
+(under Documentation/security/launch-integrity/) contain a plethora of other
+resources and information that can be used to understand the Secure Launch
+technology more broadly.
 
 For topics not addressed by this document, please contact TrenchBoot developers
 via the community site:
@@ -14,7 +17,7 @@ via the community site:
 
 ## Platforms
 
-The current patchset (version 8) only supports Intel TXT. AMD SKINIT support
+The current patchset (version 9) only supports Intel TXT. AMD SKINIT support
 is in the works and coming soon.
 
 An Intel system (desktop, server, laptop) needs to be a vPro SKU in order to
@@ -42,26 +45,39 @@ Launch feature. This is a vanilla Linux kernel based off a torvalds/master branc
 snapshot at the time time patch set was assembled. The patches could be
 applied to different distros of Linux, probably requiring some rebasing:
 
- - [Latest Linux Patch Set](https://github.com/TrenchBoot/linux/tree/linux-sl-master-2-5-24-v8)
+ - [Latest Linux Patch Set](https://github.com/TrenchBoot/linux/tree/linux-sl-master-5-16-24-v9)
 
 The Secure Launch feature is enabled through a Kconfig setting and can
-be found here using e.g. make menuconfig:
+be found here using e.g. `make menuconfig`:
 
-"Processor type and features" -> "[ ] Secure Launch support"
+`"Processor type and features" -> "[ ] Secure Launch support"`
+
+The Linux Secure Launch in-tree documentation mentioned in the first section
+contains other instructions on properly configuring a Secure Launch kernel.
 
 ## GRUB
 
 Each recent release of the Linux patches is accompanied by a GRUB branch
 in TrenchBoot that works with the specified version. The branch for version
-8 can be found here:
+9 can be found here:
 
- - [GRUB for Version 8](https://github.com/TrenchBoot/grub/tree/grub-sl-fc-38-v8)
+ - [GRUB for Version 9](https://github.com/TrenchBoot/grub/tree/grub-sl-2.12-v9)
 
-This version of GRUB is based off of GRUB 2.06 with the Fedora Core 38
-patches as well as the patches to support the Secure Launch feature.
-Instructions for bulding this branch can be found here:
+This version of GRUB is based off of upstream GRUB 2.12 with the patches to
+support the Secure Launch feature. The folloing is a basic set of instructions
+for bulding a standalone version of UEFI GRUB on this branch:
 
- - [BUILDING](https://github.com/TrenchBoot/grub/blob/grub-sl-fc-38-v8/BUILDING)
+```
+$ cd <grub-branch-checkout-location>
+$ ./bootstrap
+$ mkdir build
+$ cd build
+$ ../configure --with-platform=efi --target=x86_64
+$ make
+$ ./grub-mkimage -O x86_64-efi -o grubx64.efi -p /EFI/redhat -d grub-core all_video boot btrfs cat chain configfile echo efifwsetup efinet ext2 fat font gfxmenu gfxterm gzio halt hfsplus iso9660 jpeg loadenv loopback lvm mdraid09 mdraid1x minicmd normal part_apple part_msdos part_gpt password_pbkdf2 png reboot regexp search search_fs_uuid search_fs_file search_label serial sleep syslinuxcfg test tftp video xfs backtrace http linux usb usbserial_common usbserial_pl2303 usbserial_ftdi usbserial_usbdebug keylayouts at_keyboard multiboot2
+```
+
+The final command will produce the UEFI GRUB image `grubx64.efi` needed.
 
 ## Configuration
 
@@ -201,7 +217,7 @@ one of interest. In this case the error is `0x0000000` meaning there was no prev
 error. An error of the form `0xc0008XXX` is coming from the Secure Launch kernel code.
 The errors are listed in the main header file:
 
- - [SL Error Codes](https://github.com/rossphilipson/linux/blob/linux-sl-master-2-5-24-v8/include/linux/slaunch.h#L114C27-L114C37)
+ - [SL Error Codes](https://github.com/TrenchBoot/linux/blob/linux-sl-master-5-16-24-v9/include/linux/slaunch.h#L114)
 
 Errors coming from other sources like the CPU or the SINIT ACM have different forms.
 Consult the TXT documentation from Intel to determine what the error means.
