@@ -322,8 +322,8 @@ present at the beginning of every entry.
     :linenos: 1
 
     struct slr_entry_hdr {
-        u16 tag;
-        u16 size;
+        u32 tag;
+        u32 size;
     };
 
 SLRT Entry Tag Types
@@ -367,7 +367,7 @@ invoke the DLE Handler and for the DLE Handler to invoke the DL.
 
     struct slr_entry_dl_info {
         struct slr_entry_hdr hdr;
-        u32 dce_size;
+        u64 dce_size;
         u64 dce_base;
         u64 dlme_size;
         u64 dlme_base;
@@ -423,7 +423,7 @@ This entry describes where and what type of TPM event log should be used.
     struct slr_entry_log_info {
         struct slr_entry_hdr hdr;
         u16 format;
-        u16 reserved[3];
+        u16 reserved;
         u32 size;
         u64 addr;
     };
@@ -449,6 +449,7 @@ stored, and how the event should be identified in the TPM event log.
 
     struct slr_entry_policy {
         struct slr_entry_hdr hdr;
+        u16 reserved[2];
         u16 revision;
         u16 nr_entries;
         struct slr_policy_entry policy_entries[];
@@ -570,7 +571,6 @@ across to the post-launch environment.
 
     struct slr_entry_intel_info {
         struct slr_entry_hdr hdr;
-        u16 reserved[2];
         u64 txt_heap;
         u64 saved_misc_enable_msr;
         struct txt_mtrr_state saved_bsp_mtrrs;
@@ -676,6 +676,7 @@ measured.
 
     struct slr_entry_uefi_config {
         struct slr_entry_hdr hdr;
+        u16 reserved[2];
         u16 revision;
         u16 nr_entries;
         struct slr_uefi_cfg_entry uefi_cfg_entries[];
@@ -876,7 +877,8 @@ The OS2MLE structure for Secure Launch is defined as follows,
 
     struct os2mle {
         u32 version;
-        u32 boot_params_addr;
+        u32 reserved;
+        u64 boot_params_addr;
         u64 slrt;
         u64 txt_info;
         u32 ap_wake_block;
