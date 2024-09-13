@@ -17,7 +17,7 @@ via the community site:
 
 ## Platforms
 
-The current patchset (version 10) only supports Intel TXT. AMD SKINIT support
+The current patchset (version 11) only supports Intel TXT. AMD SKINIT support
 is in the works and coming soon.
 
 An Intel system (desktop, server, laptop) needs to be a vPro SKU in order to
@@ -45,7 +45,7 @@ Launch feature. This is a vanilla Linux kernel based off a torvalds/master branc
 snapshot at the time time patch set was assembled. The patches could be
 applied to different distros of Linux, probably requiring some rebasing:
 
- - [Latest Linux Patch Set Version 10](https://github.com/TrenchBoot/linux/tree/linux-sl-master-8-21-24-v10)
+ - [Latest Linux Patch Set Version 11](https://github.com/TrenchBoot/linux/tree/linux-sl-master-9-12-24-v11)
 
 The Secure Launch feature is enabled through a Kconfig setting and can
 be found here using e.g. `make menuconfig`:
@@ -61,7 +61,7 @@ Each recent release of the Linux patches is accompanied by a GRUB branch
 in TrenchBoot that works with the specified version. The branch for version
 9 can be found here:
 
- - [GRUB for Version 10](https://github.com/TrenchBoot/grub/tree/grub-sl-2.12-v10)
+ - [GRUB for Version 11](https://github.com/TrenchBoot/grub/tree/grub-sl-2.12-v11)
 
 This version of GRUB is based off of upstream GRUB 2.12 with the patches to
 support the Secure Launch feature. The folloing is a basic set of instructions
@@ -86,7 +86,7 @@ There is a new GRUB command that instructs GRUB to initiate a Secure Launch call
 Launch of the Linux kernel:
 
 ```
-menuentry 'Linux with Secure Launch 6.11.0-rc4-master-v10' --unrestricted {
+menuentry 'Linux with Secure Launch 6.11.0-rc7-master-v11' --unrestricted {
         load_video
         insmod gzio
         insmod part_gpt
@@ -97,8 +97,8 @@ menuentry 'Linux with Secure Launch 6.11.0-rc4-master-v10' --unrestricted {
                 search --no-floppy --fs-uuid --set=root bba24662-776e-4396-9b1e-9ee5606d79b8
         fi
         slaunch
-        linux /vmlinuz-6.11.0-rc4-master-v10 root=/dev/mapper/root ro crashkernel=auto resume=/dev/mapper/swap rd.lvm.lv=my/root rd.lvm.lv=my/swap rhgb console=ttyS0,115200n8 console=tty0 LANG=en_US.UTF-8
-        initrd /initrd-6.11.0-rc4-master-v10.img
+        linux /vmlinuz-6.11.0-rc7-master-v11 root=/dev/mapper/root ro crashkernel=auto resume=/dev/mapper/swap rd.lvm.lv=my/root rd.lvm.lv=my/swap rhgb console=ttyS0,115200n8 console=tty0 LANG=en_US.UTF-8
+        initrd /initrd-6.11.0-rc7-master-v11.img
         slaunch_module /txt-sinit-for-given-platform
 }
 ```
@@ -215,9 +215,9 @@ Secure launcher: Intel TXT
 This shows a number of the TXT register values including `TXT.ERRORCODE` which is the
 one of interest. In this case the error is `0x0000000` meaning there was no previous
 error. An error of the form `0xc0008XXX` is coming from the Secure Launch kernel code.
-The errors are listed in the main header file:
+The errors are detailed in the Linux documentation and listed in the main header file:
 
- - [SL Error Codes](https://github.com/TrenchBoot/linux/blob/linux-sl-master-5-16-24-v9/include/linux/slaunch.h#L114)
+ - [SL Error Codes](https://github.com/TrenchBoot/linux/blob/linux-sl-master-9-12-24-v11/include/linux/slaunch.h#L108)
 
 Errors coming from other sources like the CPU or the SINIT ACM have different forms.
 Consult the TXT documentation from Intel to determine what the error means.
