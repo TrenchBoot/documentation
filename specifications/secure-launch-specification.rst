@@ -615,13 +615,41 @@ AMD Secure Launch Platforms
 AMD SKINIT Info
 ^^^^^^^^^^^^^^^
 
-A placeholder for info specific to AMD SKINIT.
+:REQUIRED: This entry **MUST** be present on AMD platforms.
+
+The three fields following `slr_entry_hdr` form `setup_data` structure[1] used
+to pass data to Linux and the rest of the fields are its data (the structure is
+covered in more detail in the "Measuring the Linux setup_data" section of this
+specification). This avoids the need to pass SLRT address separately from the
+Linux boot parameters.
+
+:tag: SLR_ENTRY_AMD_INFO
+:next:
+    Pointer to the next `setup_data` structure, or NULL if this is the last one.
+:type: Type of the entry (**MUST** be equal to `SETUP_SECURE_LAUNCH`).
+:len: Length of the following data.
+:slrt_size: Size of the SLRT in bytes.
+:slrt_base: Physical address of the SLRT.
+:boot_params_base:
+    Physical address of boot parameters, format depends on target kernel.
+:psp_version:
+    When applicable, version of PSP that participates in DRTM, 0 otherwise.
 
 .. code-block:: c
     :linenos: 1
 
+    #define SETUP_SECURE_LAUNCH        10
+
     struct slr_entry_amd_info {
         struct slr_entry_hdr hdr;
+        u64 next;
+        u32 type;
+        u32 len;
+        u64 slrt_size;
+        u64 slrt_base;
+        u64 boot_params_base;
+        u16 psp_version;
+        u16 reserved[3];
     };
 
 ARM DRTM Environments
@@ -852,7 +880,7 @@ has `SLR_POLICY_IMPLICIT_SIZE` flag set.
 Appendix B: Intel TXT OS2MLE
 ============================
 
-The Intel TXT specification[1] provides a provision for the pre-launch environment to
+The Intel TXT specification[2] provides a provision for the pre-launch environment to
 pass information to the post-launch environment. The specification does not define
 this structure, leaving that to the implementation, but provides an allocation for
 it in the TXT Heap definition. This area is referred to as the OS2MLE structure.
@@ -886,4 +914,5 @@ The OS2MLE structure for Secure Launch is defined as follows,
         u8  mle_scratch[64];
     };
 
-[1] https://www.intel.com/content/www/us/en/content-details/315168/intel-trusted-execution-technology-intel-txt-software-development-guide.html?wapkw=txt
+[1] https://www.kernel.org/doc/html/v6.12/arch/x86/boot.html#details-of-header-fields
+[2] https://www.intel.com/content/www/us/en/content-details/315168/intel-trusted-execution-technology-intel-txt-software-development-guide.html?wapkw=txt
